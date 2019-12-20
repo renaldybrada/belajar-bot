@@ -1,0 +1,28 @@
+name: my-bot
+flows:
+    fallback:
+        active: true
+        fallback: true
+        intents:
+            fallbackIntent:
+                type: text
+                fallback: true
+        states:
+            init:
+                initial: true
+                action: showDontUnderstand
+                end: true
+                transitions:
+                    init:
+                        fallback: true
+        actions:
+            showDontUnderstand:
+                type: text
+                options:
+                    text: 'Maaf, akmal belum mengerti'
+        methods: {}
+methods: null
+nlus: null
+author: renaldybrada
+changelog: init
+tag: null

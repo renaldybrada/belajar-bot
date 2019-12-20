@@ -21,8 +21,41 @@ flows:
                 options:
                     text: 'Maaf, akmal belum mengerti'
         methods: {}
+    greeting:
+        active: true
+        intents:
+            greetingIntent:
+                initial: true
+                type: text
+                classifier:
+                    nlu: intent
+                    match: greetingNLU
+        states:
+            init:
+                initial: true
+                transitions:
+                    showGreeting:
+                        fallback: true
+            showGreeting:
+                action: sayHello
+                end: true
+        actions:
+            sayHello:
+                type: text
+                options:
+                    text: 'Halo saya akmal, bot yang baik'
 methods: null
-nlus: null
+nlus:
+    intent:
+        type: keyword
+        options:
+            keywords:
+                greetingNLU:
+                    - hi
+                    - hai
+                    - halo
+                    - mal
+                    - hello
 author: renaldybrada
 changelog: init
 tag: null

@@ -1,0 +1,26 @@
+showAvailableMenu(message, context, data, options): >
+    const menus = ["Espresso", "Latte", "Mocha"];
+    let buttons = [];
+
+    menus.forEach( function (item) {
+      buttons.push({
+        type: "postback",
+        label: item,
+        payload: {
+            type: "menu",
+            value: item
+          }
+      });
+    });
+    return {
+      type: "data",
+      payload: {
+          type: "template",
+          template_type: "button",
+          items: {
+            text: "Silahkan pilih menu dibawah ini",
+            title: "askMenu",
+            actions: buttons
+          }
+      }
+    };

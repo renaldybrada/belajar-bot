@@ -37,14 +37,68 @@ flows:
                     showGreeting:
                         fallback: true
             showGreeting:
-                action: sayHello
+                action:
+                    -
+                        name: sayHello
+                    -
+                        name: showMenu
                 end: true
         actions:
             sayHello:
                 type: text
                 options:
                     text: 'Halo saya akmal, bot yang baik'
-methods: null
+            showMenu:
+                type: template
+                options:
+                    type: button
+                    items:
+                        text: mau pesan apa ?
+                        title: askingOrder
+                        actions:
+                            -
+                                type: postback
+                                label: Espresso
+                                payload:
+                                    type: chooseCoffee
+                                    value: espresso
+                            -
+                                type: postback
+                                label: Latte
+                                payload:
+                                    type: chooseCoffee
+                                    value: latte
+                            -
+                                type: postback
+                                label: Mocha
+                                payload:
+                                    type: chooseCoffee
+                                    value: mocha
+    chooseCoffee:
+        active: true
+        intents:
+            chooseCoffee:
+                initial: true
+                type: data
+                condition: payload.type == "chooseCoffee"
+        states:
+            init:
+                initial: true
+                transitions:
+                    showChoosedCoffee:
+                        mapping:
+                            context:
+                                choosedCoffee: payload.value
+                        fallback: true
+            showChoosedCoffee:
+                action: showChoosedCoffeeAction
+                end: true
+        actions:
+            showChoosedCoffeeAction:
+                type: text
+                options:
+                    text: kamu memilih kopi $(context.choosedCoffee)
+methods: $include(./methods.yml)
 nlus:
     intent:
         type: keyword

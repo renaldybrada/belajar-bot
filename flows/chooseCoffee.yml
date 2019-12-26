@@ -9,10 +9,17 @@ intents:
         condition: payload.type == "chooseCoffee"
     showCoffeeResult:
         type: data
-        condition: payload.type == "chooseQuantity"
+        condition: payload.type == "chooseQuantity" && ((payload.value == "1") || (payload.value == "2"))
+    customQuantityIntent:
+        type: data
+        condition: payload.type == "chooseQuantity" && payload.value == "customQuantity"
+    inputCustomQuantityIntent:
+        type: text
+        classifier:
+            nlu: quantity
     reenter:
-      type: command
-      condition: content === "reenter"
+        type: command
+        condition: content === "reenter"
 states:
     init:
         initial: true
@@ -37,6 +44,17 @@ states:
                     context:
                         choosedQuantity: payload.value
                 fallback: true
+            inputCustomQuantity:
+                condition: intent == "customQuantityIntent"
+                fallback: true
+    inputCustomQuantity:
+        action: inputCustomQuantityAction
+        transitions:
+            showOrderCoffeeResult:
+                condition: intent == "inputCustomQuantityIntent"
+                mapping:
+                    context:
+                        choosedQuantity: content
     showOrderCoffeeResult:
         action: showOrderCoffeeResultAction
         end: true
@@ -89,10 +107,14 @@ actions:
                             value: 2
                     -
                         type: postback
-                        label: "3 cangkir"
+                        label: "Jumlah lain"
                         payload:
                             type: chooseQuantity
-                            value: 3
+                            value: customQuantity
+    inputCustomQuantityAction:
+      type: text
+      options:
+        text: Masukkan jumlah $(context.choosedCoffee) yang ingin kamu pesan
     showOrderCoffeeResultAction:
         type: text
         options:

@@ -17,6 +17,10 @@ nlus:
                     - halo
                     - mal
                     - hello
+    quantity:
+        type: regex
+        options:
+            regex: '[1-9]'
 author: renaldybrada
 changelog: init
 tag: null

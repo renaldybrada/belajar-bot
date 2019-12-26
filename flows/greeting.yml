@@ -6,6 +6,10 @@ intents:
         classifier:
             nlu: intent
             match: greetingNLU
+    telegramGreetingIntent:
+        initial: true
+        type: text
+        condition: content == "/start"
 states:
     init:
         initial: true

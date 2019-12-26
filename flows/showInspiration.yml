@@ -3,7 +3,7 @@ intents:
   initIntent:
     initial: true
     type: data
-    condition: ((payload.type == "mainMenu") && (payload.value == "seekInspiration")) || ((payload.type == "reAskingConfirmation") && (payload.value == "yes"))
+    condition: ((payload.type == "mainMenu") && (payload.value == "seekInspiration"))
   chooseQuoteInspiration:
     type: data
     condition: payload.type == "inspirationMenu" && payload.value == "quote"
@@ -16,6 +16,9 @@ intents:
   showAdviceResultIntent:
     type: command
     condition: content == "handleAdviceAPICommand"
+  reShowInspirationMenu:
+      type: data
+      condition: payload.type == "reAskingConfirmation" && payload.value == "yes"
   sayThankYouIntent:
     type: data
     condition: payload.type == "reAskingConfirmation" && payload.value == "no"
@@ -61,6 +64,8 @@ states:
     transitions:
       sayThankYou:
         condition: intent == "sayThankYouIntent"
+      showInspirationMenu:
+        condition: intent == "reShowInspirationMenu"
   adviceResult:
     action:
       - name: showAdviceResult
@@ -68,6 +73,8 @@ states:
     transitions:
       sayThankYou:
         condition: intent == "sayThankYouIntent"
+      showInspirationMenu:
+        condition: intent == "reShowInspirationMenu"
   sayThankYou:
     action: sayThankYouAction
     end: true

@@ -1,0 +1,150 @@
+active: true
+intents:
+  initIntent:
+    initial: true
+    type: data
+    condition: ((payload.type == "mainMenu") && (payload.value == "seekInspiration")) || ((payload.type == "reAskingConfirmation") && (payload.value == "yes"))
+  chooseQuoteInspiration:
+    type: data
+    condition: payload.type == "inspirationMenu" && payload.value == "quote"
+  chooseAdviceInspiration:
+    type: data
+    condition: payload.type == "inspirationMenu" && payload.value == "advice"
+  showQuoteResultIntent:
+    type: command
+    condition: content == "handleQuoteAPICommand"
+  showAdviceResultIntent:
+    type: command
+    condition: content == "handleAdviceAPICommand"
+  sayThankYouIntent:
+    type: data
+    condition: payload.type == "reAskingConfirmation" && payload.value == "no"
+states:
+  init:
+    initial: true
+    transitions:
+      showInspirationMenu:
+        fallback: true
+  showInspirationMenu:
+    action: inspirationMenuAction
+    transitions:
+      quoteInspiration:
+        condition: intent == "chooseQuoteInspiration"
+        fallback: true
+      adviceInspiration:
+        condition: intent == "chooseAdviceInspiration"
+        fallback: true
+  quoteInspiration:
+    action:
+      - name: callQuoteAPI
+      - name: handleQuoteAPIResult
+    transitions:
+      quoteResult:
+        condition: intent == "showQuoteResultIntent" && payload.result
+        mapping:
+          context:
+            quote: payload.result
+  adviceInspiration:
+    action:
+      - name: callAdviceAPI
+      - name: handleAdviceAPIResult
+    transitions:
+      adviceResult:
+        condition: intent == "showAdviceResultIntent" && payload.result
+        mapping:
+          context:
+            advice: payload.result
+  quoteResult:
+    action:
+      - name: showQuoteResult
+      - name: reAskingInspiration
+    transitions:
+      sayThankYou:
+        condition: intent == "sayThankYouIntent"
+    end: true
+  adviceResult:
+    action:
+      - name: showAdviceResult
+      - name: reAskingInspiration
+    transitions:
+      sayThankYou:
+        condition: intent == "sayThankYouIntent"
+    end: true
+  sayThankYou:
+    action: sayThankYouAction
+    end: true
+actions:
+  callQuoteAPI:
+    type: api
+    options:
+      method: "GET"
+      uri: "https://quote-garden.herokuapp.com/quotes/random"
+  handleQuoteAPIResult:
+    type: command
+    options:
+      command: handleQuoteAPICommand
+      payload:
+        result: $(result)
+  callAdviceAPI:
+    type: api
+    options:
+      method: "GET"
+      uri: "https://api.adviceslip.com/advice"
+  handleAdviceAPIResult:
+    type: command
+    options:
+      command: handleAdviceAPICommand
+      payload:
+        result: $(result)
+  reAskingInspiration:
+    type: template
+    options:
+      type: button
+      items:
+        text: mau cari inspirasi lain ?
+        title: reAskingInspiration
+        actions:
+          -
+            type: postback
+            label: Mau dong
+            payload:
+              type: reAskingConfirmation
+              value: yes
+          -
+            type: postback
+            label: Enggak
+            payload:
+              type: reAskingConfirmation
+              value: no
+  showQuoteResult:
+    type: text
+    options:
+      text: "$(context.quote.quoteText) - $(context.quote.quoteAuthor)"
+  showAdviceResult:
+    type: text
+    options:
+      text: "$(context.advice.slip.advice)"
+  sayThankYouAction:
+    type: text
+    options:
+      text: "Terima kasih .. "
+  inspirationMenuAction:
+    type: template
+    options:
+      type: button
+      items:
+        text: mau cari inspirasi apa ?
+        title: askingInspiration
+        actions:
+          -
+            type: postback
+            label: Random Quote
+            payload:
+              type: inspirationMenu
+              value: quote
+          -
+            type: postback
+            label: Random Advice
+            payload:
+              type: inspirationMenu
+              value: advice

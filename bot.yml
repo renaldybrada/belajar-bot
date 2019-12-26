@@ -3,6 +3,7 @@ flows:
     fallback: $include(./flows/fallback.yml)
     greeting: $include(./flows/greeting.yml)
     chooseCoffee: $include(./flows/chooseCoffee.yml)
+    showInspiration: $include(./flows/showInspiration.yml)
 methods: $include(./methods.yml)
 nlus:
     intent:
@@ -11,6 +12,7 @@ nlus:
             keywords:
                 greetingNLU:
                     - hi
+                    - hei
                     - hai
                     - halo
                     - mal

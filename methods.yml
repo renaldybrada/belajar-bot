@@ -1,26 +1,12 @@
-showAvailableMenu(message, context, data, options): >
-    const menus = ["Espresso", "Latte", "Mocha"];
-    let buttons = [];
+showQuoteResult(message, context, data, options): >
+    let theQuote = context.quote.quoteText;
+    if (context.quote.quoteAuthor !== "") {
+        theQuote = context.quote.quoteText +" - "+ context.quote.quoteAuthor;
+    }
 
-    menus.forEach( function (item) {
-      buttons.push({
-        type: "postback",
-        label: item,
-        payload: {
-            type: "menu",
-            value: item
-          }
-      });
-    });
     return {
-      type: "data",
-      payload: {
-          type: "template",
-          template_type: "button",
-          items: {
-            text: "Silahkan pilih menu dibawah ini",
-            title: "askMenu",
-            actions: buttons
-          }
+      type: "text",
+      options: {
+          text: theQuote
       }
     };

@@ -1,0 +1,99 @@
+active: true
+intents:
+    coffeMenuIntent:
+        initial: true
+        type: data
+        condition: payload.type == "mainMenu" && payload.value == "pesenKopi"
+    showCoffeeIntent:
+        type: data
+        condition: payload.type == "chooseCoffee"
+    showCoffeeResult:
+        type: data
+        condition: payload.type == "chooseQuantity"
+    reenter:
+      type: command
+      condition: content === "reenter"
+states:
+    init:
+        initial: true
+        transitions:
+            showCoffeeMenu:
+              fallback: true
+    showCoffeeMenu:
+        action: showCoffeeMenuAction
+        transitions:
+            chooseQuantity:
+                condition: intent == "showCoffeeIntent"
+                mapping:
+                    context:
+                        choosedCoffee: payload.value
+                fallback: true
+    chooseQuantity:
+        action: chooseQuantityAction
+        transitions:
+            showOrderCoffeeResult:
+                condition: intent == "showCoffeeResult"
+                mapping:
+                    context:
+                        choosedQuantity: payload.value
+                fallback: true
+    showOrderCoffeeResult:
+        action: showOrderCoffeeResultAction
+        end: true
+actions:
+    showCoffeeMenuAction:
+        type: template
+        options:
+            type: button
+            items:
+                text: mau pesan apa ?
+                title: askingOrder
+                actions:
+                    -
+                        type: postback
+                        label: Espresso
+                        payload:
+                            type: chooseCoffee
+                            value: espresso
+                    -
+                        type: postback
+                        label: Latte
+                        payload:
+                            type: chooseCoffee
+                            value: latte
+                    -
+                        type: postback
+                        label: Mocha
+                        payload:
+                            type: chooseCoffee
+                            value: mocha
+    chooseQuantityAction:
+        type: template
+        options:
+            type: button
+            items:
+                text: mau pesan $(context.choosedCoffee) berapa cangkir ?
+                title: askingQuantity
+                actions:
+                    -
+                        type: postback
+                        label: "1 cangkir"
+                        payload:
+                            type: chooseQuantity
+                            value: 1
+                    -
+                        type: postback
+                        label: "2 cangkir"
+                        payload:
+                            type: chooseQuantity
+                            value: 2
+                    -
+                        type: postback
+                        label: "3 cangkir"
+                        payload:
+                            type: chooseQuantity
+                            value: 3
+    showOrderCoffeeResultAction:
+        type: text
+        options:
+            text: kamu memilih kopi $(context.choosedCoffee) sebanyak $(context.choosedQuantity) cangkir

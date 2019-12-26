@@ -1,0 +1,46 @@
+active: true
+intents:
+    greetingIntent:
+        initial: true
+        type: text
+        classifier:
+            nlu: intent
+            match: greetingNLU
+states:
+    init:
+        initial: true
+        transitions:
+            showGreeting:
+                fallback: true
+    showGreeting:
+        action:
+            -
+                name: sayHello
+            -
+                name: showMenu
+        end: true
+actions:
+    sayHello:
+        type: text
+        options:
+            text: 'Halo saya akmal, bot yang baik'
+    showMenu:
+        type: template
+        options:
+            type: button
+            items:
+                text: kamu mau ngapain ?
+                title: askingMenu
+                actions:
+                    -
+                        type: postback
+                        label: Pesen Kopi
+                        payload:
+                            type: mainMenu
+                            value: pesenKopi
+                    -
+                        type: postback
+                        label: Cari Inspirasi
+                        payload:
+                            type: mainMenu
+                            value: seekInspiration

@@ -3,7 +3,7 @@ intents:
     coffeMenuIntent:
         initial: true
         type: data
-        condition: payload.type == "mainMenu" && payload.value == "pesenKopi"
+        condition: (payload.type == "mainMenu") && (payload.value == "pesenKopi")
     showCoffeeIntent:
         type: data
         condition: payload.type == "chooseCoffee"
@@ -17,6 +17,12 @@ intents:
         type: text
         classifier:
             nlu: quantity
+    reShowMenu:
+        type: data
+        condition: payload.type == "reAskingOrderConfirmation" && payload.value == "yes"
+    sayThankYouIntent:
+        type: data
+        condition: payload.type == "reAskingOrderConfirmation" && payload.value == "no"
     reenter:
         type: command
         condition: content === "reenter"
@@ -56,7 +62,16 @@ states:
                     context:
                         choosedQuantity: content
     showOrderCoffeeResult:
-        action: showOrderCoffeeResultAction
+        action:
+          - name: showOrderCoffeeResultAction
+          - name: reAskingCoffe
+        transitions:
+          sayThankYou:
+            condition: intent == "sayThankYouIntent"
+          showCoffeeMenu:
+            condition: intent == "reShowMenu"
+    sayThankYou:
+        action: sayThankYouAction
         end: true
 actions:
     showCoffeeMenuAction:
@@ -119,3 +134,27 @@ actions:
         type: text
         options:
             text: kamu memilih kopi $(context.choosedCoffee) sebanyak $(context.choosedQuantity) cangkir
+    reAskingCoffe:
+      type: template
+      options:
+        type: button
+        items:
+          text: mau pesan kopi lain ?
+          title: reAskingCoffee
+          actions:
+            -
+              type: postback
+              label: Mau !
+              payload:
+                type: reAskingOrderConfirmation
+                value: yes
+            -
+              type: postback
+              label: Sudah cukup
+              payload:
+                type: reAskingOrderConfirmation
+                value: no
+    sayThankYouAction:
+      type: text
+      options:
+        text: "Terima kasih .."

@@ -61,7 +61,6 @@ states:
     transitions:
       sayThankYou:
         condition: intent == "sayThankYouIntent"
-    end: true
   adviceResult:
     action:
       - name: showAdviceResult
@@ -69,7 +68,6 @@ states:
     transitions:
       sayThankYou:
         condition: intent == "sayThankYouIntent"
-    end: true
   sayThankYou:
     action: sayThankYouAction
     end: true

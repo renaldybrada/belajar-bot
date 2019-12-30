@@ -27,7 +27,7 @@ actions:
     sayHello:
         type: text
         options:
-            text: 'Halo saya akmal, bot yang baik'
+            text: 'Halo saya Mas Gred, bot yang baik'
     showMenu:
         type: template
         options:

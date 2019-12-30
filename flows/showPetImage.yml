@@ -1,0 +1,166 @@
+active: true
+
+intents:
+  initIntent:
+    initial: true
+    type: data
+    condition: ((payload.type == "mainMenu") && (payload.value == "showPetImage"))
+
+  chooseCatImageIntent:
+    type: data
+    condition: ((payload.type == "petImageMenu") && (payload.value == "cat"))
+
+  chooseDogImageIntent:
+    type: data
+    condition: ((payload.type == "petImageMenu") && (payload.value == "dog"))
+
+  showResultImage:
+    type: command
+    condition: content == "showImageResult"
+
+  sayThankYouIntent:
+    type: data
+    condition: ((payload.type == "reAskingPetImageConfirmation") && (payload.value == "no"))
+
+  reaskingPetImageMenu:
+    type: data
+    condition: ((payload.type == "reAskingPetImageConfirmation") && (payload.value == "yes"))
+
+states:
+  init:
+    initial: true
+    transitions:
+      showPetImageMenu:
+        fallback: true
+
+  showPetImageMenu:
+    action: petImageMenu
+    transitions:
+      chooseCatImage:
+        condition: intent == "chooseCatImageIntent"
+        fallback: true
+      chooseDogImage:
+        condition: intent == "chooseDogImageIntent"
+        fallback: true
+
+  chooseCatImage:
+    action:
+      - name: callCatImageAPI
+      - name: handleCatImage
+    transitions:
+      showResult:
+        condition: intent == "showResultImage" && payload.result
+        mapping:
+          context:
+            petImage: payload.result
+        fallback: true
+
+  chooseDogImage:
+    action:
+      - name: callDogImageAPI
+      - name: handleDogImage
+    transitions:
+      showResult:
+        condition: intent == "showResultImage" && payload.result
+        mapping:
+          context:
+            petImage: payload.result
+        fallback: true
+
+  showResult:
+    action:
+      - name: showResultAction
+      - name: reaskingImageAction
+    transitions:
+      sayThankYou:
+        condition: intent == "sayThankYouIntent"
+        fallback: true
+      showPetImageMenu:
+        condition: intent == "reaskingPetImageMenu"
+        fallback: true
+
+  sayThankYou:
+    action: showThankYouAction
+    end: true
+
+actions:
+  petImageMenu:
+    type: template
+    options:
+      type: button
+      items:
+        text: kamu suka hewan apa ?
+        title: askingWhichPet
+        actions:
+          -
+            type: postback
+            label: Kucing
+            payload:
+              type: petImageMenu
+              value: cat
+          -
+            type: postback
+            label: Anjing !
+            payload:
+              type: petImageMenu
+              value: dog
+
+  callCatImageAPI:
+    type: api
+    options:
+      method: "GET"
+      uri: "http://aws.random.cat/meow"
+
+  handleCatImage:
+    type: command
+    options:
+      command: showImageResult
+      payload:
+        result: $(result.file)
+
+  callDogImageAPI:
+    type: api
+    options:
+      method: "GET"
+      uri: "https://dog.ceo/api/breeds/image/random"
+
+  handleDogImage:
+    type: command
+    options:
+      command: showImageResult
+      payload:
+        result: $(result.message)
+
+  showResultAction:
+    type: 'template'
+    options:
+      type: 'image'
+      items:
+        originalContentUrl: $(context.petImage)
+        previewImageUrl: $(context.petImage)
+
+  reaskingImageAction:
+    type: template
+    options:
+      type: button
+      items:
+        text: mau lihat gambar lain ?
+        title: reAskingPetImage
+        actions:
+          -
+            type: postback
+            label: Mau dong
+            payload:
+              type: reAskingPetImageConfirmation
+              value: yes
+          -
+            type: postback
+            label: Enggak
+            payload:
+              type: reAskingPetImageConfirmation
+              value: no
+
+  showThankYouAction:
+    type: text
+    options:
+      text: "Terima kasih kk"

@@ -48,3 +48,10 @@ actions:
                         payload:
                             type: mainMenu
                             value: seekInspiration
+
+                    -
+                        type: postback
+                        label: Gambar Hewan
+                        payload:
+                            type: mainMenu
+                            value: showPetImage

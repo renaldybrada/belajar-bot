@@ -4,6 +4,7 @@ flows:
     greeting: $include(./flows/greeting.yml)
     chooseCoffee: $include(./flows/chooseCoffee.yml)
     showInspiration: $include(./flows/showInspiration.yml)
+    showPetImage: $include(./flows/showPetImage.yml)
 methods: $include(./methods.yml)
 nlus:
     intent:

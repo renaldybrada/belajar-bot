@@ -5,6 +5,7 @@ flows:
     chooseCoffee: $include(./flows/chooseCoffee.yml)
     showInspiration: $include(./flows/showInspiration.yml)
     showPetImage: $include(./flows/showPetImage.yml)
+    showBoredApi: $include(./flows/showBoredApi.yml)
 methods: $include(./methods.yml)
 nlus:
     intent:
@@ -16,7 +17,7 @@ nlus:
                     - hei
                     - hai
                     - halo
-                    - halo mas gred
+                    - mal
                     - hello
     quantity:
         type: regex

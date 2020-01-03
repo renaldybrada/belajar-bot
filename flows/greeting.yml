@@ -55,3 +55,11 @@ actions:
                         payload:
                             type: mainMenu
                             value: showPetImage
+                    
+                    -   
+                        type: postback
+                        label: Bored
+                        payload: 
+                            type: mainMenu
+                            value: showBoredApi
+                        

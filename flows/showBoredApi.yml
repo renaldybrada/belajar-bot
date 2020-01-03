@@ -1,0 +1,124 @@
+active: true
+intents: 
+  initIntent:
+    initial: true
+    type: data
+    condition: ((payload.type == "mainMenu") && (payload.value == "showBoredApi"))
+
+  showBoredMenu:
+    type: data
+    condition: ((payload.type == "boredMenuIntent") && (payload.value == "bored"))
+
+  showResultBored:
+    type: command
+    condition: content == "showBoredResult"
+
+  sayThankYouIntent:
+    type: data
+    condition: ((payload.type == "reAskingBoredConfirmation") && (payload.value == "no"))
+
+  reaskingBoredMenu:
+    type: data
+    condition: ((payload.type == "reAskingBoredConfirmation") && (payload.value == "yes"))
+
+states:
+  init:
+    initial: true
+    transitions:
+      showBoredMenu:
+        fallback: true
+  
+  showBoredMenu:
+    action: boredMenuIntent
+    transitions:
+      boredMenuState:
+        condition: intent == "boredMenuIntent"
+        fallback: true
+
+  boredMenuState:
+    action:
+      - name: callBoredAPI
+      - name: handleBored
+    transitions:
+      showResult:
+        condition: intent == "showResultBored" && payload.result
+        mapping:
+          context:
+            bored: payload.result
+        fallback: true
+
+  showResult:
+    action:
+      - name: showResultAction
+      - name: reaskingBoredAction
+    transitions:
+      sayThankYou:
+        condition: intent == "sayThankYouIntent"
+        fallback: true
+      showBoredMenu:
+        condition: intent == "reaskingBoredMenu"
+        fallback: true
+
+  sayThankYou:
+    action: showThankYouAction
+    end: true
+
+actions:
+  boredMenuIntent:
+    type: template
+    options:
+      type: button
+      items:
+        text: kamu bored ?
+        title: youAreBored
+        actions:
+          -
+            type: postback
+            label: Bored
+            payload:
+              type: boredMenuIntent
+              value: bored
+
+  callBoredAPI:
+      type: api
+      options:
+        method: "GET"
+        uri: "https://www.boredapi.com/api/activity"
+
+  handleBored:
+    type: command
+    options:
+      command: showBoredResult
+      payload:
+        result: $(result.activity)
+
+  showResultAction:
+    type: text
+    options:
+      text: $(context.bored)
+
+  reaskingBoredAction:
+    type: template
+    options:
+      type: button
+      items:
+        text: mau tau aktivitas lain ?
+        title: reAskingBored
+        actions:
+          -
+            type: postback
+            label: Mau dong
+            payload:
+              type: reAskingBoredConfirmation
+              value: yes
+          -
+            type: postback
+            label: Enggak
+            payload:
+              type: reAskingBoredConfirmation
+              value: no
+
+  showThankYouAction:
+    type: text
+    options:
+      text: "Terima kasih kk"

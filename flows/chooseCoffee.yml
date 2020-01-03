@@ -25,7 +25,7 @@ intents:
         condition: payload.type == "reAskingOrderConfirmation" && payload.value == "no"
     reenter:
         type: command
-        condition: content === "reenter"
+        condition: "content === 'reenter'"
 states:
     init:
         initial: true
@@ -61,6 +61,8 @@ states:
                 mapping:
                     context:
                         choosedQuantity: content
+            inputCustomQuantity:
+                fallback: true
     showOrderCoffeeResult:
         action:
           - name: showOrderCoffeeResultAction
